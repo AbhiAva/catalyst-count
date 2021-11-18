@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Project Files
+config.py
+
+# Project Folders
+django-env/
