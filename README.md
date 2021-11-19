@@ -1,4 +1,4 @@
-# django-operations
+# catalyst-count
 A Django Application that handles Database operations via UIs.
 
 ## Installing the dependencies to run on a local environment

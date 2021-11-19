@@ -6,3 +6,5 @@ git pull
 # echo Restarting supervisor ....
 # supervisorctl stop all
 # supervisorctl start all
+
+# Run the File
