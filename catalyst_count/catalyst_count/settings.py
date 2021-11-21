@@ -36,7 +36,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['15.207.33.150', 'https://catalyst-count-lb-1780968169.ap-south-1.elb.amazonaws.com/']
+ALLOWED_HOSTS = ['15.207.33.150', 'catalyst-count-lb-1780968169.ap-south-1.elb.amazonaws.com']
 
 # AllAuth Setup
 AUTHENTICATION_BACKENDS = [
