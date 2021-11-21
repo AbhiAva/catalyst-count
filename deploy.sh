@@ -8,7 +8,7 @@ cp catalyst_count/catalyst_count/.env.local catalyst_count/catalyst_count/.env
 
 # Activating the Environment
 echo Activating the Environment ....
-source django-app/bin/activate
+source ../django-app/bin/activate
 
 # Restart a supervisor server instance
 # echo Restarting supervisor ....
