@@ -1,3 +1,4 @@
+#!/bin/bash
 # Taking the latest pull
 echo Taking latest pull ....
 git pull
@@ -11,8 +12,6 @@ echo Activating the Environment ....
 source ~/django-app/bin/activate
 
 # Restart a supervisor server instance
-# echo Restarting supervisor ....
-# supervisorctl stop all
-# supervisorctl start all
-
-# Run the File
+echo Restarting supervisor ....
+supervisorctl stop all
+supervisorctl start all
