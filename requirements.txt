@@ -28,6 +28,7 @@ distro==1.4.0
 distro-info===0.23ubuntu1
 Django==3.2.9
 django-allauth==0.46.0
+django-crispy-forms==1.13.0
 django-environ==0.8.1
 djangorestframework==3.12.4
 duplicity==0.8.12.0

@@ -11,7 +11,16 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from urllib.parse import quote_plus as urlquote
 import os
+import environ
+
+# Setting up Django Environ
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+# reading .env file
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,10 +31,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9%p1+32b^j*#8*(i0g699sr@+ug8%$*=68y0b0z(p5dbzf^k0-'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
@@ -39,6 +48,7 @@ AUTHENTICATION_BACKENDS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'crispy_forms',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -56,7 +66,8 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 4
-LOGIN_REDIRECT_URL = '/home'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Additional configuration settings
 SOCIALACCOUNT_QUERY_EMAIL = True
@@ -68,6 +79,8 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS =1
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
+ACCOUNT_DEFAULT_HTTP_PROTOCOL='http'
+
 
 # 1 day
 ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 86400
@@ -76,9 +89,9 @@ ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 86400
 ACCOUNT_LOGOUT_REDIRECT_URL ='/accounts/login/'
 
 # redirects to profile page if not configured.
-LOGIN_REDIRECT_URL = '/accounts/email/'
+LOGIN_REDIRECT_URL = '/'
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
 
 # Provider specific settings
 SOCIALACCOUNT_PROVIDERS = {
@@ -104,13 +117,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'catalyst_count.urls'
+ROOT_URLCONF = env('ROOT_URL')
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.normpath(os.path.join(BASE_DIR, 'templates')),
+            os.path.normpath(os.path.join(BASE_DIR, 'templates')),            
+            os.path.normpath(os.path.join(BASE_DIR, 'templates', 'account')),
+            os.path.normpath(os.path.join(BASE_DIR, 'templates', 'account', 'css')),
+            os.path.normpath(os.path.join(BASE_DIR, 'templates', 'account', 'fonts')),
+            os.path.normpath(os.path.join(BASE_DIR, 'templates', 'account', 'js')),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -132,12 +149,12 @@ WSGI_APPLICATION = 'catalyst_count.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'operationsdb', 
-        'USER': 'postgres', 
-        'PASSWORD': 'Unicorn@3214',
-        'HOST': '127.0.0.1', 
-        'PORT': '5432',
+        'ENGINE': env('DB_ENGINE'),
+        'NAME': env('DB_NAME'), 
+        'USER': env('DB_USER'), 
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'), 
+        'PORT': env('DB_PORT'),
     }
 }
 
@@ -188,5 +205,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS ORIGIN SETUP
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost:8888',
+    env('APP_URL'),
 )

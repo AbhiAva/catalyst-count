@@ -1,0 +1,54 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+<br/><br/><br/><br/><br/>
+<div class="container">
+  <div class="col-md-12 text-center">
+    <div class="col-md-push-6 col-xs-6">
+
+      <h1>{% trans "Sign In" %}</h1>
+
+      {% get_providers as socialaccount_providers %}
+
+      {% if socialaccount_providers %}
+      <div class="info-grids social-login-details align-self">
+        <p class="text-center mb-3">Or login with</p>
+          <a class="fa fa-google" href="/accounts/google/login/?process=login"></a>
+        <p class="text-center mt-4">Not yet registered? <a href="{{ signup_url }}">signup</a>
+            here</p>
+      </div>
+
+
+      {% include "socialaccount/snippets/login_extra.html" %}
+
+      {% else %}
+      <p>{% blocktrans %}If you have not created an account yet, then please
+      <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
+      {% endif %}
+
+      <form class="login" method="POST" action="{% url 'account_login' %}">
+        <table class="col-md-12" style="border: white;">
+          {% csrf_token %}
+          <tr>
+            <td>{{ form.as_p }}</td>
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+          </tr>
+          <tr><td></td></tr>
+          <tr>  
+            <td><a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+            <button class="button primaryAction" type="submit">{% trans "Sign In" %}</button></td>
+          </tr>
+        </table>  
+      </form>
+    </div>
+  </div>  
+</div>  
+
+{% endblock %}

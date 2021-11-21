@@ -22,4 +22,4 @@ class AuthUsers(models.Model):
     is_active = models.BooleanField(default=False)
     password = models.CharField(max_length=128, default='', null=True)
     class Meta:
-        db_table = "auth_user"    
+        db_table = "auth_users"    
