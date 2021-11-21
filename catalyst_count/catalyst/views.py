@@ -5,28 +5,32 @@ from rest_framework import status
 from catalyst.models import AuthUsers, Companies
 from catalyst.serializers import CompanySerializer, UserSerializer
 from rest_framework.decorators import api_view
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 @api_view(['GET'])
 def home(request):
     if request.method == 'GET':
-        return 'hello!'
+        return render(request, 'index.html')
     else:
         return JsonResponse({'message': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
- 
+
+@login_required
 @api_view(['GET'])
 def retrieve_companies(request):
     if request.method == 'GET':
         catalyst = Companies.objects.all()
         
-        search_term = request.GET.get('search_term', None)
-        industry = request.GET.get('industry', None)
-        year_founded = request.GET.get('year_founded', None)
-        city = request.GET.get('city', None)
-        state = request.GET.get('state', None)
-        country = request.GET.get('country', None)
-        employees_from = request.GET.get('employees_from', None)
-        employees_to = request.GET.get('employees_to', None)
+        search_term = request.GET.get('search_term')
+        industry = request.GET.get('industry')
+        year_founded = request.GET.get('year_founded')
+        city = request.GET.get('city')
+        state = request.GET.get('state')
+        country = request.GET.get('country')
+        current_employee_estimate = request.GET.get('current_employee_estimate')
+        total_employee_estimate = request.GET.get('total_employee_estimate')
         
         if search_term is not None:
             catalyst = catalyst.filter(name__contains=search_term)
@@ -38,80 +42,30 @@ def retrieve_companies(request):
             catalyst = catalyst.filter(year_founded__contains=year_founded)
         
         if city is not None:
-            catalyst = catalyst.filter(city__contains=city)
+            catalyst = catalyst.filter(locality__contains=city)
         
         if state is not None:
-            catalyst = catalyst.filter(state__contains=state)
+            catalyst = catalyst.filter(locality__contains=state)
         
         if country is not None:
             catalyst = catalyst.filter(country__contains=country)
         
-        if employees_from is not None:
-            catalyst = catalyst.filter(employees_from__contains=employees_from)
+        if current_employee_estimate is not None:
+            catalyst = catalyst.filter(current_employee_estimate__contains=current_employee_estimate)
         
-        if employees_to is not None:
-            catalyst = catalyst.filter(employees_to__contains=employees_to)
+        if total_employee_estimate is not None:
+            catalyst = catalyst.filter(total_employee_estimate__contains=total_employee_estimate)
         
+        count = catalyst.count()
+        context = {
+            "count": count
+        }
         catalyst_serializer = CompanySerializer(catalyst, many=True)
-        return JsonResponse(catalyst_serializer.data, safe=False)
+        return render(request, 'index.html', context)
     else:
         return JsonResponse({'message': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
-  
-@api_view(['GET'])
-def retrieve_company(request, id):
-    if request.method == 'GET':
-        catalyst = Companies.objects.all()
-        
-        search_term = request.GET.get('search_term', None)
-        industry = request.GET.get('industry', None)
-        year_founded = request.GET.get('year_founded', None)
-        city = request.GET.get('city', None)
-        state = request.GET.get('state', None)
-        country = request.GET.get('country', None)
-        employees_from = request.GET.get('employees_from', None)
-        employees_to = request.GET.get('employees_to', None)
-        
-        if search_term is not None:
-            catalyst = catalyst.filter(name__contains=search_term)
-        
-        if industry is not None:
-            catalyst = catalyst.filter(industry__contains=industry)
-        
-        if year_founded is not None:
-            catalyst = catalyst.filter(year_founded__contains=year_founded)
-        
-        if city is not None:
-            catalyst = catalyst.filter(city__contains=city)
-        
-        if state is not None:
-            catalyst = catalyst.filter(state__contains=state)
-        
-        if country is not None:
-            catalyst = catalyst.filter(country__contains=country)
-        
-        if employees_from is not None:
-            catalyst = catalyst.filter(employees_from__contains=employees_from)
-        
-        if employees_to is not None:
-            catalyst = catalyst.filter(employees_to__contains=employees_to)
-        
-        catalyst_serializer = CompanySerializer(catalyst, many=True)
-        return JsonResponse(catalyst_serializer.data, safe=False)
-    else:
-        return JsonResponse({'message': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)
-              
-@api_view(['POST'])
-def add_company(request):
-    if request.method == 'POST':
-        company_data = JSONParser().parse(request)
-        company_serializer = CompanySerializer(data=company_data)
-        if company_serializer.is_valid():
-            company_serializer.save()
-            return JsonResponse(company_serializer.data, status=status.HTTP_201_CREATED) 
-        return JsonResponse(company_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    else: 
-        return JsonResponse({'message': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST) 
-  
+
+@login_required
 @api_view(['GET'])
 def retrieve_users(request):
     if request.method == 'GET': 
@@ -120,24 +74,15 @@ def retrieve_users(request):
         return JsonResponse(users_serializer.data, safe=False)
     else: 
         return JsonResponse({'message': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST) 
-  
+
 @api_view(['GET'])
-def retrieve_user(request, id):
-    if request.method == 'GET': 
-        users = AuthUsers.objects.all()
-        users_serializer = UserSerializer(users, many=True)
-        return JsonResponse(users_serializer.data, safe=False)
-    else: 
-        return JsonResponse({'message': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST) 
-              
-@api_view(['POST'])
-def add_user(request):
-    if request.method == 'POST':
-        user_data = JSONParser().parse(request)
-        user_serializer = UserSerializer(data=user_data)
-        if user_serializer.is_valid():
-            user_serializer.save()
-            return JsonResponse(user_serializer.data, status=status.HTTP_201_CREATED) 
-        return JsonResponse(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    else: 
-        return JsonResponse({'message': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST) 
+def retrieve_lovs(request):
+    if request.method == 'GET':
+        column_name = request.GET.get('column_name')
+        catalyst = Companies.objects.values_list(column_name, flat=True).order_by(column_name).distinct()
+        context = {
+            "values": list(map(str, catalyst)), 
+        }
+        return render(request, 'index.html', )
+    else:
+        return JsonResponse({'message': 'Invalid Request'}, status=status.HTTP_400_BAD_REQUEST)

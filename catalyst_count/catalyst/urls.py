@@ -17,11 +17,8 @@ from django.conf.urls import url
 from catalyst import views
  
 urlpatterns = [ 
-    url(r'^api/v1/home$', views.home),
+    url(r'^$', views.home),
+    url(r'^api/v1/catalyst-count-lovs/(?P<column_name>\w{0,50})/$', views.retrieve_lovs),
     url(r'^api/v1/catalyst-count$', views.retrieve_companies),
-    url(r'^api/v1/catalyst-count/(?P<id>[0-9]+)$', views.retrieve_company),
-    url(r'^api/v1/catalyst-count/upload$', views.add_company),
     url(r'^api/v1/users$', views.retrieve_users),
-    url(r'^api/v1/(?P<id>[0-9]+)$', views.retrieve_user),
-    url(r'^api/v1/users/upload$', views.add_user),
 ]
